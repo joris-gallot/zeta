@@ -141,10 +141,28 @@ impl TextInput {
   ) {
     self.is_selecting = true;
 
-    if event.modifiers.shift {
-      self.select_to(self.index_for_mouse_position(event.position), cx);
-    } else {
-      self.move_to(self.index_for_mouse_position(event.position), cx)
+    match event.click_count {
+      1 => {
+        if event.modifiers.shift {
+          self.select_to(self.index_for_mouse_position(event.position), cx);
+        } else {
+          self.move_to(self.index_for_mouse_position(event.position), cx)
+        }
+      }
+      2 => {
+        let click_index = self.index_for_mouse_position(event.position);
+        let start = self.previous_word_boundary(click_index);
+        let end = self.next_word_boundary(click_index);
+        self.selected_range = start..end;
+        self.selection_reversed = false;
+        cx.notify();
+      }
+      3 => {
+        self.selected_range = 0..self.content.len();
+        self.selection_reversed = false;
+        cx.notify();
+      }
+      _ => {}
     }
   }
 
