@@ -19,11 +19,14 @@ impl TerminalInput {
 
   fn on_key_down(&mut self, event: &KeyDownEvent, _window: &mut Window, cx: &mut Context<Self>) {
     let alt = event.keystroke.modifiers.alt;
+    let cmd = event.keystroke.modifiers.platform;
 
     match event.keystroke.key.as_str() {
       "left" => {
         if alt {
           self.text_buffer.move_left_word();
+        } else if cmd {
+          self.text_buffer.move_to_start();
         } else {
           self.text_buffer.move_left_char();
         }
@@ -33,6 +36,8 @@ impl TerminalInput {
       "right" => {
         if alt {
           self.text_buffer.move_right_word();
+        } else if cmd {
+          self.text_buffer.move_to_end();
         } else {
           self.text_buffer.move_right_char();
         }
@@ -46,6 +51,8 @@ impl TerminalInput {
       "backspace" => {
         if alt {
           self.text_buffer.delete_word();
+        } else if cmd {
+          self.text_buffer.delete_to_start();
         } else {
           self.text_buffer.delete_char();
         }

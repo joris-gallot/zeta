@@ -16,6 +16,14 @@ impl TextBuffer {
     }
   }
 
+  pub fn move_to_start(&mut self) {
+    self.cursor.index = 0;
+  }
+
+  pub fn move_to_end(&mut self) {
+    self.cursor.index = self.text.len_chars();
+  }
+
   pub fn move_right_word(&mut self) {
     let content = self.text.to_string();
     let graphemes: Vec<&str> = UnicodeSegmentation::graphemes(content.as_str(), true).collect();
@@ -81,6 +89,13 @@ impl TextBuffer {
   pub fn delete_word(&mut self) {
     let original_index = self.cursor.index;
     self.move_left_word();
+    let new_index = self.cursor.index;
+    self.delete(new_index, original_index - new_index);
+  }
+
+  pub fn delete_to_start(&mut self) {
+    let original_index = self.cursor.index;
+    self.move_to_start();
     let new_index = self.cursor.index;
     self.delete(new_index, original_index - new_index);
   }
