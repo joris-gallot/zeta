@@ -78,6 +78,13 @@ impl TextBuffer {
     }
   }
 
+  pub fn delete_word(&mut self) {
+    let original_index = self.cursor.index;
+    self.move_left_word();
+    let new_index = self.cursor.index;
+    self.delete(new_index, original_index - new_index);
+  }
+
   pub fn insert_char(&mut self, ch: char) {
     self.text.insert_char(self.cursor.index, ch);
     self.cursor.move_right(self.text.len_chars());
@@ -89,9 +96,5 @@ impl TextBuffer {
 
   pub fn as_str(&self) -> String {
     self.text.to_string()
-  }
-
-  pub fn len(&self) -> usize {
-    self.text.len_chars()
   }
 }

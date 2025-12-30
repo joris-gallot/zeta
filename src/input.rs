@@ -44,7 +44,12 @@ impl TerminalInput {
         cx.notify();
       }
       "backspace" => {
-        self.text_buffer.delete_char();
+        if alt {
+          self.text_buffer.delete_word();
+        } else {
+          self.text_buffer.delete_char();
+        }
+
         cx.notify();
       }
       key => {
