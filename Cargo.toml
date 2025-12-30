@@ -1,0 +1,8 @@
+[package]
+name = "zeta"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+gpui = { version = "*" }
+ropey = "1.6"
