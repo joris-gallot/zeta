@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 gpui = { version = "*" }
 ropey = "1.6"
+unicode-segmentation = "1.12"

@@ -1,9 +1,8 @@
+use crate::text::TextBuffer;
 use gpui::{
   Context, FocusHandle, InteractiveElement, IntoElement, KeyDownEvent, ParentElement, Render,
   Styled, Window, div, white,
 };
-
-use crate::text::TextBuffer;
 
 pub struct TerminalInput {
   input_buffer: TextBuffer,
@@ -19,13 +18,33 @@ impl TerminalInput {
   }
 
   fn on_key_down(&mut self, event: &KeyDownEvent, _window: &mut Window, cx: &mut Context<Self>) {
+    let alt = event.keystroke.modifiers.alt;
+
     match event.keystroke.key.as_str() {
       "left" => {
-        self.input_buffer.cursor.move_left();
+        if alt {
+          self.input_buffer.move_left_word();
+        } else {
+          self.input_buffer.move_left_char();
+        }
+
         cx.notify();
       }
       "right" => {
-        self.input_buffer.cursor.move_right(self.input_buffer.len());
+        if alt {
+          self.input_buffer.move_right_word();
+        } else {
+          self.input_buffer.move_right_char();
+        }
+
+        cx.notify();
+      }
+      "space" => {
+        self.input_buffer.insert_char(' ');
+        cx.notify();
+      }
+      "backspace" => {
+        self.input_buffer.delete_char();
         cx.notify();
       }
       key => {
@@ -38,7 +57,7 @@ impl TerminalInput {
   }
 
   fn render_content(&self) -> impl IntoElement {
-    let cursor_col = self.input_buffer.cursor.index;
+    let cursor_col = self.input_buffer.get_cursor_index();
 
     let input_content = self.input_buffer.as_str();
     let (before_cursor, after_cursor) = input_content.split_at(cursor_col);
