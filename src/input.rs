@@ -5,7 +5,7 @@ use gpui::{
 };
 
 pub struct TerminalInput {
-  input_buffer: TextBuffer,
+  text_buffer: TextBuffer,
   focus_handle: FocusHandle,
 }
 
@@ -13,7 +13,7 @@ impl TerminalInput {
   pub fn new(cx: &mut Context<Self>) -> Self {
     Self {
       focus_handle: cx.focus_handle(),
-      input_buffer: TextBuffer::new(),
+      text_buffer: TextBuffer::new(),
     }
   }
 
@@ -23,33 +23,33 @@ impl TerminalInput {
     match event.keystroke.key.as_str() {
       "left" => {
         if alt {
-          self.input_buffer.move_left_word();
+          self.text_buffer.move_left_word();
         } else {
-          self.input_buffer.move_left_char();
+          self.text_buffer.move_left_char();
         }
 
         cx.notify();
       }
       "right" => {
         if alt {
-          self.input_buffer.move_right_word();
+          self.text_buffer.move_right_word();
         } else {
-          self.input_buffer.move_right_char();
+          self.text_buffer.move_right_char();
         }
 
         cx.notify();
       }
       "space" => {
-        self.input_buffer.insert_char(' ');
+        self.text_buffer.insert_char(' ');
         cx.notify();
       }
       "backspace" => {
-        self.input_buffer.delete_char();
+        self.text_buffer.delete_char();
         cx.notify();
       }
       key => {
         if let Some(ch) = key.chars().next() {
-          self.input_buffer.insert_char(ch);
+          self.text_buffer.insert_char(ch);
           cx.notify();
         }
       }
@@ -57,9 +57,9 @@ impl TerminalInput {
   }
 
   fn render_content(&self) -> impl IntoElement {
-    let cursor_col = self.input_buffer.get_cursor_index();
+    let cursor_col = self.text_buffer.get_cursor_index();
 
-    let input_content = self.input_buffer.as_str();
+    let input_content = self.text_buffer.as_str();
     let (before_cursor, after_cursor) = input_content.split_at(cursor_col);
     let ren = format!("{}|{}", before_cursor, after_cursor);
 
