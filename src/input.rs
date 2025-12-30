@@ -1,7 +1,7 @@
 use crate::text::TextBuffer;
 use gpui::{
   Context, FocusHandle, InteractiveElement, IntoElement, KeyDownEvent, ParentElement, Render,
-  Styled, Window, div, white,
+  Styled, Window, div, px, white,
 };
 
 pub struct TerminalInput {
@@ -68,14 +68,25 @@ impl TerminalInput {
     }
   }
 
-  fn render_content(&self) -> impl IntoElement {
-    let cursor_col = self.text_buffer.get_cursor_index();
+  fn render_input(&self) -> impl IntoElement {
+    let cursor_index = self.text_buffer.get_cursor_index();
 
     let input_content = self.text_buffer.as_str();
-    let (before_cursor, after_cursor) = input_content.split_at(cursor_col);
-    let ren = format!("{}|{}", before_cursor, after_cursor);
+    let (before_cursor, after_cursor) = input_content.split_at(cursor_index);
 
-    div().child(ren)
+    div().flex().child(before_cursor.to_string()).child(
+      div()
+        .relative()
+        .child(
+          div()
+            .absolute()
+            .left_0()
+            .w(px(2.0))
+            .h_full()
+            .bg(white().opacity(0.7)),
+        )
+        .child(after_cursor.to_string()),
+    )
   }
 }
 
@@ -90,6 +101,6 @@ impl Render for TerminalInput {
       .size_full()
       .on_key_down(cx.listener(Self::on_key_down))
       .text_color(white())
-      .child(self.render_content())
+      .child(self.render_input())
   }
 }
